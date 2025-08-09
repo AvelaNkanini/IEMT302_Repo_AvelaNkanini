@@ -12,3 +12,6 @@ if response.status_code != 200:
 
 # This site returns plain text, no need for complex HTML parsing
 print("Current Johannesburg Weather:", response.text.strip())
+
+if __name__ == "__main__":
+    main()
