@@ -37,4 +37,4 @@ def main():
         browser.close()
 
 if __name__ == "__main__":
-    main()
+    print("Entry point found!")
