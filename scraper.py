@@ -1,30 +1,40 @@
 #!/usr/bin/env python3
-
-import requests
+from playwright.sync_api import sync_playwright
 from bs4 import BeautifulSoup
 
-# URL of the webpage
-url = "https://techcrunch.com/2024/07/31/india-is-the-largest-market-for-meta-ai-usage/"
+def main():
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=True)
+        page = browser.new_page()
+        page.goto("https://www.jse.co.za/indices")
 
-# Send GET request with a User-Agent
-headers = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36"
-}
-response = requests.get(url, headers=headers)
+        # Wait for the table to load fully
+        page.wait_for_selector("table")
 
-# Check if request was successful
-if response.status_code == 200:
-    soup = BeautifulSoup(response.content, 'html.parser')
+        # Get full HTML of the first table on the page
+        table_html = page.inner_html("table")
 
-    # Extract headline
-    headline_tag = soup.find('h1')
-    if headline_tag:
-        print("Headline:", headline_tag.get_text(strip=True))
-    else:
-        print("Headline not found.")
-else:
-    print(f"Failed to fetch page. Status code: {response.status_code}")
+        # Parse the table HTML using BeautifulSoup
+        soup = BeautifulSoup(table_html, 'html.parser')
+        rows = soup.find_all('tr')
+
+        print("Symbol | Company Name | Volume | Change")
+        print("-" * 50)
+
+        count = 0
+        for row in rows:
+            cols = row.find_all('td')
+            if len(cols) >= 4:
+                symbol = cols[0].get_text(strip=True)
+                company = cols[1].get_text(strip=True)
+                volume = cols[2].get_text(strip=True)
+                change = cols[3].get_text(strip=True)
+                print(f"{symbol} | {company} | {volume} | {change}")
+                count += 1
+                if count == 5:
+                    break
+
+        browser.close()
 
 if __name__ == "__main__":
-    # Whatever your main code is
     main()
