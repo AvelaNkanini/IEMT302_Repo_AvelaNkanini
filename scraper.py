@@ -24,3 +24,7 @@ if response.status_code == 200:
         print("Headline not found.")
 else:
     print(f"Failed to fetch page. Status code: {response.status_code}")
+
+if __name__ == "__main__":
+    # Whatever your main code is
+    main()
