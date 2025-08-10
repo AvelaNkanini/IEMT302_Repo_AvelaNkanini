@@ -2,42 +2,55 @@
 
 import requests
 from bs4 import BeautifulSoup
-from playwright.sync_api import sync_playwright
-
 
 def main():
-    with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True)
-        page = browser.new_page()
-        page.goto("https://www.jse.co.za/indices")
+    URL = "https://realpython.github.io/fake-jobs/"
+    page = requests.get(URL)
 
-        # Wait for the table to load fully
-        page.wait_for_selector("table")
+    print(page.text)
 
-        # Get full HTML of the first table on the page
-        table_html = page.inner_html("table")
+    soup = BeautifulSoup(page.content, "html.parser")
+    results = soup.find(id="ResultsContainer")
 
-        # Parse the table HTML using BeautifulSoup
-        soup = BeautifulSoup(table_html, 'html.parser')
-        rows = soup.find_all('tr')
+    print(results.prettify)
 
-        print("Symbol | Company Name | Volume | Change")
-        print("-" * 50)
+    print("-"*100)
 
-        count = 0
-        for row in rows:
-            cols = row.find_all('td')
-            if len(cols) >= 4:
-                symbol = cols[0].get_text(strip=True)
-                company = cols[1].get_text(strip=True)
-                volume = cols[2].get_text(strip=True)
-                change = cols[3].get_text(strip=True)
-                print(f"{symbol} | {company} | {volume} | {change}")
-                count += 1
-                if count == 5:
-                    break
+    job_elements = results.find_all("div", class_="card-content")           # Find elements by HTML class name
+    for job_element in job_elements:
+        #print(job_element, end="\n"*2) 
+        title_element = job_element.find("h2", class_="title")
+        company_element = job_element.find("h3", class_="company")
+        location_element = job_element.find("p", class_="location")
+        print(title_element.text.strip())
+        print(company_element.text.strip())
+        print(location_element.text.strip())
+        print("-" * 100)
 
-        browser.close()
+    python_jobs = results.find_all(                             # searches for amount of jobs with python 
+        "h2", string= lambda text: "python" in text.lower()
+        )
+    print(len(python_jobs))
 
+    python_job_elements = [h2_element.parent.parent.parent for h2_element in python_jobs]      # list comprehension
+        
+    for job_element in python_job_elements:
+        #print(job_element, end="\n"*2) 
+        title_element = job_element.find("h2", class_="title")
+        company_element = job_element.find("h3", class_="company")
+        location_element = job_element.find("p", class_="location")
+        print(title_element.text.strip())
+        print(company_element.text.strip())
+        print(location_element.text.strip())
+        print("-" * 100)
+        
+        links = job_element.find_all("a")
+        for link in links:
+        #   link_url = link["href"]         # fetches value of href attributes
+            link_url = job_element.find_all("a")[1]["href"]
+            print(link.text.strip())
+            
 if __name__ == '__main__':
-    main()
+    print(main())
+    
+
