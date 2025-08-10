@@ -1,12 +1,10 @@
 #!/usr/bin/env python3
-
 import requests
 from bs4 import BeautifulSoup
 
 def main():
-    url = "https://wttr.in/Johannesburg?format=%C+%t"
-    response = requests.get(url)
-    print("Current Johannesburg Weather:", response.text.strip())
+    # your scraping logic here
+    pass
 
 if __name__ == "__main__":
     main()
