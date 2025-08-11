@@ -17,6 +17,6 @@ This Python script scrapes the top 5 stock indices data from the Johannesburg St
 
 ## Install dependencies with:
 
-- pip install -r requirements.txt
-- playwright install
-- python scraper.py
+- ppip install playwright
+- python -m playwright install
+- python scraper.py (to run the scraper on terminal)
